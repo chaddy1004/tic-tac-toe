@@ -4,17 +4,19 @@ import pygame
 
 
 def main_single_player():
-    ttt_game = TicTacToe(single_player=True)
+    ttt_game = TicTacToe(single_player=True, start="player")
     run = True
     while run:
+        print("hello")
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                ttt_game.click()
+                changed = ttt_game.click()
+                ttt_game.render_board()
+                if changed:
+                    ttt_game.agent_move()
 
-        ttt_game.render_board()
-        ttt_game.agent_move()
         ttt_game.render_board()
         result = ttt_game.check_game_result()
         print(result)

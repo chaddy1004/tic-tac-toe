@@ -9,7 +9,7 @@ GRAY = (200, 200, 200)
 
 
 class TicTacToe():
-    def __init__(self, single_player = True):
+    def __init__(self, single_player=True, start="player"):
         # Screen
         pygame.init()
         self.single_player = single_player
@@ -26,8 +26,9 @@ class TicTacToe():
         self.DRAW_FONT = pygame.font.Font('SDSamliphopangcheTTFOutline.ttf', 50)
 
         self.gap = self.WIDTH // self.ROWS
-
+        self.start = start
         self.board = [[" ", " ", " "], [" ", " ", " "], [" ", " ", " "]]
+        self.playable_positions = {(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 0), (2, 1), (2, 2)}
         self.position_array = [[None, None, None], [None, None, None], [None, None, None]]
         self.x_turn = True
         self.o_turn = False
@@ -60,41 +61,48 @@ class TicTacToe():
                 self.position_array[row][col] = (x, y)
 
     def click(self):
-        distance_to_grid_centre = (self.WIDTH // 3) // 2
+        padding= 20
+        distance_to_grid_centre = (((self.WIDTH // 3) // 2)**2 +  ((self.WIDTH // 3) // 2)**2)**(0.5) - padding
         # Mouse position
         m_x, m_y = pygame.mouse.get_pos()
-
+        changed = False
         for row in range(3):
             for col in range(3):
                 mark = self.board[row][col]
                 x, y = self.position_array[row][col]
-                is_playable = mark == " "
+                is_playable = (row,col) in self.playable_positions
                 # Distance between mouse and the centre of the square
                 dis = math.sqrt((x - m_x) ** 2 + (y - m_y) ** 2)
 
                 # If it's inside the square
+                print(m_x, m_y, x,y,dis, distance_to_grid_centre)
                 if dis < distance_to_grid_centre and is_playable:
-                    if self.x_turn:  # If it's X's turn
-                        self.x_turn = False
-                        self.o_turn = True
+                    if self.start == "player":  # If it's X's turn
                         self.board[row][col] = 'X'
 
-                    elif self.o_turn:  # If it's O's turn
-                        self.x_turn = True
-                        self.o_turn = False
+                    elif self.start == "agent":  # If it's O's turn
                         self.board[row][col] = 'O'
+                    self.playable_positions.remove((row, col))
+                    changed = True
+
+        print("at click")
+        print(self.board[0])
+        print(self.board[1])
+        print(self.board[2])
+        return changed
 
     def agent_move(self):
-        row, col = self.agent.choose_move(board=self.board)
-        if self.x_turn:  # If it's X's turn
-            self.x_turn = False
-            self.o_turn = True
-            self.board[row][col] = 'X'
+        if len(self.playable_positions) > 0:
+            row, col = self.agent.choose_move(board=self.board)
+            if self.start == "player":  # If it's X's turn
+                self.board[row][col] = 'O'
 
-        elif self.o_turn:  # If it's O's turn
-            self.x_turn = True
-            self.o_turn = False
-            self.board[row][col] = 'O'
+            elif self.start == "agent":  # If it's O's turn
+                self.board[row][col] = 'X'
+            self.playable_positions.remove((row, col))
+        else:
+            print("HERE")
+            return
 
     def check_game_result(self):
         unfinished = False
@@ -140,7 +148,10 @@ class TicTacToe():
                 return "O"
             else:
                 pass
-
+        print("check")
+        print(self.board[0])
+        print(self.board[1])
+        print(self.board[2])
         if unfinished:
             return "Pending"
         else:
@@ -197,7 +208,7 @@ def main():
                 ttt_game.has_won(winner=result)
             run = False
 
-
-while True:
-    if __name__ == '__main__':
-        main()
+#
+# while True:
+#     if __name__ == '__main__':
+#         main()

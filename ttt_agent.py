@@ -1,4 +1,5 @@
 from typing import List
+import random
 
 SCORE = {"Player": 1, "Opponent": -1, "Draw": 0}
 
@@ -9,8 +10,6 @@ class TTT_Agent():
         self.enemy_token = "X" if self.my_token == "O" else "O"
         self.go_first = (token == "X")  # X goes first
         self.best_move = None
-
-        pass
 
     def checkWinner(self, board: List[List[str]]):
         unfinished = True
@@ -89,17 +88,20 @@ class TTT_Agent():
                         board[row][col] = " "
             return best_score
 
+    # def choose_move(self, board: List[List[str]]):
+    #     best_move = None
+    #     best_score = float('-inf')
+    #     for row in range(3):
+    #         for col in range(3):
+    #             if board[row][col] == " ":
+    #                 score = self.minimax(board=board, myTurn=True)
+    #                 if score > best_score:
+    #                     best_score = score
+    #                     best_move = (row, col)
+    #     return best_move
+    #
     def choose_move(self, board: List[List[str]]):
-        best_move = None
-        best_score = float(-inf)
-        for row in range(3):
-            for col in range(3):
-                if board[row][col] == " ":
-                    score = minimax(board=board, myTurn=True)
-                    if score > best_score:
-                        best_score = score
-                        best_move = (row, col)
-        return best_move
-
-    def __call__(self, *args, **kwargs):
-        pass
+        row, col = random.choice([0, 1, 2]), random.choice([0, 1, 2])
+        while board[row][col] != " ":
+            row, col = random.choice([0, 1, 2]), random.choice([0, 1, 2])
+        return row, col
