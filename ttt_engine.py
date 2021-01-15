@@ -85,10 +85,10 @@ class TicTacToe():
                     self.playable_positions.remove((row, col))
                     changed = True
 
-        print("at click")
-        print(self.board[0])
-        print(self.board[1])
-        print(self.board[2])
+        # print("at click")
+        # print(self.board[0])
+        # print(self.board[1])
+        # print(self.board[2])
         return changed
 
     def agent_move(self):
@@ -148,10 +148,10 @@ class TicTacToe():
                 return "O"
             else:
                 pass
-        print("check")
-        print(self.board[0])
-        print(self.board[1])
-        print(self.board[2])
+        # print("check")
+        # print(self.board[0])
+        # print(self.board[1])
+        # print(self.board[2])
         if unfinished:
             return "Pending"
         else:
@@ -184,7 +184,7 @@ class TicTacToe():
         return True
 
     def has_won(self, winner):
-        self.display_message(content=f"{winner} won!")
+        self.display_message(content=f"{winner} wins!")
         return True
 
 

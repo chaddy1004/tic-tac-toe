@@ -12,7 +12,7 @@ class TTT_Agent():
         self.best_move = None
 
     def checkWinner(self, board: List[List[str]]):
-        unfinished = True
+        unfinished = False
         for col in range(3):
             column = [board[0][col], board[1][col], board[2][col]]
             if " " in column:
@@ -38,7 +38,7 @@ class TTT_Agent():
                 else:
                     pass
 
-        diag1 = set([board[0][0], board[1][1], board[2][2]])
+        diag1 = {board[0][0], board[1][1], board[2][2]}
         if len(diag1) == 1:
             if self.my_token in diag1:
                 return "Player"
@@ -47,7 +47,7 @@ class TTT_Agent():
             else:
                 pass
 
-        diag2 = set([board[0][2], board[1][1], board[2][0]])
+        diag2 = {board[0][2], board[1][1], board[2][0]}
         if len(diag2) == 1:
             if self.my_token in diag2:
                 return "Player"
@@ -55,16 +55,20 @@ class TTT_Agent():
                 return "Opponent"
             else:
                 pass
-
         if unfinished:
             return "Pending"
         else:
             return "Draw"
 
-    def minimax(self, board: List[List[str]], myTurn):
+    def minimax(self, board: List[List[str]], depth, myTurn):
+        print(board[0])
+        print(board[1])
+        print(board[2])
         outcome = self.checkWinner(board)
+        print(outcome)
+        print("############")
         if outcome != "Pending":
-            return SCORE[outcome]
+            return SCORE[outcome]/(depth+1) # less weight on score the deeper it goes. Rewards for finishing early
 
         if myTurn:
             best_score = float('-inf')
@@ -72,8 +76,9 @@ class TTT_Agent():
                 for col in range(3):
                     if board[row][col] == " ":
                         board[row][col] = self.my_token
-                        score = self.minimax(board=board, myTurn=False)
+                        score = self.minimax(board=board, depth=depth+1, myTurn=False)
                         best_score = max(score, best_score)
+                        print(best_score)
                         board[row][col] = " "
             return best_score
 
@@ -82,26 +87,30 @@ class TTT_Agent():
             for row in range(3):
                 for col in range(3):
                     if board[row][col] == " ":
-                        board[row][col] = self.my_token
-                        score = self.minimax(board=board, myTurn=True)
+                        board[row][col] = self.enemy_token
+                        score = self.minimax(board=board, depth=depth+1, myTurn=True)
                         best_score = min(score, best_score)
                         board[row][col] = " "
             return best_score
 
-    # def choose_move(self, board: List[List[str]]):
-    #     best_move = None
-    #     best_score = float('-inf')
-    #     for row in range(3):
-    #         for col in range(3):
-    #             if board[row][col] == " ":
-    #                 score = self.minimax(board=board, myTurn=True)
-    #                 if score > best_score:
-    #                     best_score = score
-    #                     best_move = (row, col)
-    #     return best_move
-    #
     def choose_move(self, board: List[List[str]]):
-        row, col = random.choice([0, 1, 2]), random.choice([0, 1, 2])
-        while board[row][col] != " ":
-            row, col = random.choice([0, 1, 2]), random.choice([0, 1, 2])
-        return row, col
+        best_move = None
+        best_score = float('-inf')
+        for row in range(3):
+            for col in range(3):
+                if board[row][col] == " ":
+                    board[row][col] = self.my_token
+                    score = self.minimax(board=board, depth=0, myTurn=False)
+                    print(score)
+                    if score > best_score:
+                        best_score = score
+                        best_move = (row, col)
+                    board[row][col] = " "
+        return best_move
+
+    # random move
+    # def choose_move(self, board: List[List[str]]):
+    #     row, col = random.choice([0, 1, 2]), random.choice([0, 1, 2])
+    #     while board[row][col] != " ":
+    #         row, col = random.choice([0, 1, 2]), random.choice([0, 1, 2])
+    #     return row, col
