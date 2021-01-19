@@ -213,8 +213,3 @@ def main():
             else:
                 ttt_game.has_won(winner=result)
             run = False
-
-#
-# while True:
-#     if __name__ == '__main__':
-#         main()
