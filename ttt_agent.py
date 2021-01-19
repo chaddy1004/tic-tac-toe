@@ -78,7 +78,7 @@ class TTT_Agent():
                         board[row][col] = self.my_token
                         score = self.minimax(board=board, depth=depth + 1, myTurn=False)
                         best_score = max(score, best_score)
-                        print(best_score)
+                        # print(best_score)
                         board[row][col] = " "
             return best_score
 
@@ -97,6 +97,7 @@ class TTT_Agent():
         if not randomly:
             best_move = None
             best_score = float('-inf')
+            print("#############CHOOSING OPTIMAL MOVE...#############")
             for row in range(3):
                 for col in range(3):
                     if board[row][col] == " ":
@@ -107,8 +108,6 @@ class TTT_Agent():
                             best_score = score
                             best_move = (row, col)
                         board[row][col] = " "
-            print("HERE in choose move")
-            print(best_move)
             return best_move
         elif randomly:
             row, col = random.choice([0, 1, 2]), random.choice([0, 1, 2])
@@ -117,10 +116,3 @@ class TTT_Agent():
             return (row, col)
         else:
             raise ValueError("Should not be here")
-
-    # random move
-    # def choose_move_(self, board: List[List[str]]):
-    #     row, col = random.choice([0, 1, 2]), random.choice([0, 1, 2])
-    #     while board[row][col] != " ":
-    #         row, col = random.choice([0, 1, 2]), random.choice([0, 1, 2])
-    #     return row, col
