@@ -61,14 +61,14 @@ class TTT_Agent():
             return "Draw"
 
     def minimax(self, board: List[List[str]], depth, myTurn):
-        print(board[0])
-        print(board[1])
-        print(board[2])
         outcome = self.checkWinner(board)
-        print(outcome)
-        print("############")
+        # print(board[0])
+        # print(board[1])
+        # print(board[2])
+        # print(outcome)
+        # print("############")
         if outcome != "Pending":
-            return SCORE[outcome]/(depth+1) # less weight on score the deeper it goes. Rewards for finishing early
+            return SCORE[outcome] / (depth + 1)  # less weight on score the deeper it goes. Rewards for finishing early
 
         if myTurn:
             best_score = float('-inf')
@@ -76,7 +76,7 @@ class TTT_Agent():
                 for col in range(3):
                     if board[row][col] == " ":
                         board[row][col] = self.my_token
-                        score = self.minimax(board=board, depth=depth+1, myTurn=False)
+                        score = self.minimax(board=board, depth=depth + 1, myTurn=False)
                         best_score = max(score, best_score)
                         print(best_score)
                         board[row][col] = " "
@@ -88,28 +88,38 @@ class TTT_Agent():
                 for col in range(3):
                     if board[row][col] == " ":
                         board[row][col] = self.enemy_token
-                        score = self.minimax(board=board, depth=depth+1, myTurn=True)
+                        score = self.minimax(board=board, depth=depth + 1, myTurn=True)
                         best_score = min(score, best_score)
                         board[row][col] = " "
             return best_score
 
-    def choose_move(self, board: List[List[str]]):
-        best_move = None
-        best_score = float('-inf')
-        for row in range(3):
-            for col in range(3):
-                if board[row][col] == " ":
-                    board[row][col] = self.my_token
-                    score = self.minimax(board=board, depth=0, myTurn=False)
-                    print(score)
-                    if score > best_score:
-                        best_score = score
-                        best_move = (row, col)
-                    board[row][col] = " "
-        return best_move
+    def choose_move(self, board: List[List[str]], randomly=False):
+        if not randomly:
+            best_move = None
+            best_score = float('-inf')
+            for row in range(3):
+                for col in range(3):
+                    if board[row][col] == " ":
+                        board[row][col] = self.my_token
+                        score = self.minimax(board=board, depth=0, myTurn=False)
+                        # print(score)
+                        if score > best_score:
+                            best_score = score
+                            best_move = (row, col)
+                        board[row][col] = " "
+            print("HERE in choose move")
+            print(best_move)
+            return best_move
+        elif randomly:
+            row, col = random.choice([0, 1, 2]), random.choice([0, 1, 2])
+            while board[row][col] != " ":
+                row, col = random.choice([0, 1, 2]), random.choice([0, 1, 2])
+            return (row, col)
+        else:
+            raise ValueError("Should not be here")
 
     # random move
-    # def choose_move(self, board: List[List[str]]):
+    # def choose_move_(self, board: List[List[str]]):
     #     row, col = random.choice([0, 1, 2]), random.choice([0, 1, 2])
     #     while board[row][col] != " ":
     #         row, col = random.choice([0, 1, 2]), random.choice([0, 1, 2])

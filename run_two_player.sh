@@ -1,0 +1,1 @@
+python tictactoe.py --mode "two-player" --player_first

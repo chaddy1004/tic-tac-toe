@@ -1,15 +1,15 @@
 import pygame
 import math
-from typing import List
 from ttt_agent import TTT_Agent
 
+# Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (200, 200, 200)
 
 
 class TicTacToe():
-    def __init__(self, single_player=True, start="player"):
+    def __init__(self, single_player, start):
         # Screen
         pygame.init()
         self.single_player = single_player
@@ -18,8 +18,6 @@ class TicTacToe():
         self.ROWS = 3
         self.win = pygame.display.set_mode((self.WIDTH, self.WIDTH))
         pygame.display.set_caption("TicTacToe")
-
-        # Colors
 
         # Fonts
         self.RESULT_FONT = pygame.font.Font('SDSamliphopangcheTTFOutline.ttf', 40)
@@ -34,8 +32,16 @@ class TicTacToe():
         self.o_turn = False
         self.x_token = "X"  # either O or X
         self.o_token = "O"
+
+        self.last_move = "O"
+
         if self.single_player:
-            self.agent = TTT_Agent(token=self.o_token)
+            if start == "player":
+                self.agent = TTT_Agent(token=self.o_token)
+            elif start == "agent":
+                self.agent = TTT_Agent(token=self.x_token)
+            else:
+                raise ValueError("Start has to be specified to be either \"player\" or \"ai\" for single player mode")
 
         self.initialize_grid()
 
@@ -61,8 +67,8 @@ class TicTacToe():
                 self.position_array[row][col] = (x, y)
 
     def click(self):
-        padding= 20
-        distance_to_grid_centre = (((self.WIDTH // 3) // 2)**2 +  ((self.WIDTH // 3) // 2)**2)**(0.5) - padding
+        padding = 20
+        distance_to_grid_centre = (((self.WIDTH // 3) // 2) ** 2 + ((self.WIDTH // 3) // 2) ** 2) ** (0.5) - padding
         # Mouse position
         m_x, m_y = pygame.mouse.get_pos()
         changed = False
@@ -70,35 +76,35 @@ class TicTacToe():
             for col in range(3):
                 mark = self.board[row][col]
                 x, y = self.position_array[row][col]
-                is_playable = (row,col) in self.playable_positions
+                is_playable = (row, col) in self.playable_positions
                 # Distance between mouse and the centre of the square
                 dis = math.sqrt((x - m_x) ** 2 + (y - m_y) ** 2)
 
                 # If it's inside the square
-                print(m_x, m_y, x,y,dis, distance_to_grid_centre)
+                # print(m_x, m_y, x, y, dis, distance_to_grid_centre)
                 if dis < distance_to_grid_centre and is_playable:
-                    if self.start == "player":  # If it's X's turn
+                    if self.last_move == "O":  # If it's X's turn
                         self.board[row][col] = 'X'
+                        self.last_move = "X"
 
-                    elif self.start == "agent":  # If it's O's turn
+                    elif self.last_move == "X":  # If it's O's turn
                         self.board[row][col] = 'O'
+                        self.last_move = "O"
                     self.playable_positions.remove((row, col))
                     changed = True
 
-        # print("at click")
-        # print(self.board[0])
-        # print(self.board[1])
-        # print(self.board[2])
         return changed
 
     def agent_move(self):
         if len(self.playable_positions) > 0:
             row, col = self.agent.choose_move(board=self.board)
-            if self.start == "player":  # If it's X's turn
+            if self.start == "player":  # If player started first, agent is automatically always O
                 self.board[row][col] = 'O'
+                self.last_move = "O"
 
-            elif self.start == "agent":  # If it's O's turn
+            elif self.start == "agent":  # If agent started first, agent is automatically always X
                 self.board[row][col] = 'X'
+                self.last_move = "X"
             self.playable_positions.remove((row, col))
         else:
             print("HERE")
